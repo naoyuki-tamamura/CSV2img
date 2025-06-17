@@ -12,8 +12,9 @@ Module Module1
             SourceFilePath = args(0)
         End If
 
-        Dim BaseFileName As String = System.IO.Path.GetFileNameWithoutExtension(SourceFilePath)
-        Dim DestFilePath As String = System.IO.Path.GetDirectoryName(SourceFilePath) & "\" & BaseFileName & ".img"
+        SourceFilePath = Path.GetFullPath(SourceFilePath)
+        Dim BaseFileName As String = Path.GetFileNameWithoutExtension(SourceFilePath)
+        Dim DestFilePath As String = Path.GetDirectoryName(SourceFilePath) & "\" & BaseFileName & ".img"
 
         If System.IO.File.Exists(SourceFilePath) = False Then
             Console.WriteLine(SourceFilePath & "が見つかりません。")
@@ -115,5 +116,90 @@ Module Module1
             End If
         End Try
     End Function
+
+    'Imports System
+    'Imports System.IO
+    'Imports System.Text
+
+    'Module Module1
+
+    '    Sub Main(args As String())
+    '        If args.Length = 0 Then
+    '            Console.WriteLine("バイナリに変換するCSVファイルを指定してください。")
+    '            Environment.Exit(1)
+    '        End If
+
+    '        Dim SourceFilePath As String = Path.GetFullPath(args(0))
+    '        Dim BaseFileName As String = Path.GetFileNameWithoutExtension(SourceFilePath)
+    '        Dim DestFilePath As String = Path.Combine(Path.GetDirectoryName(SourceFilePath), BaseFileName & ".img")
+
+    '        If Not File.Exists(SourceFilePath) Then
+    '            Console.WriteLine(SourceFilePath & " が見つかりません。")
+    '            Environment.Exit(2)
+    '        End If
+
+    '        If File.Exists(DestFilePath) Then
+    '            Console.WriteLine("同じフォルダに '" & BaseFileName & ".img' が存在するため、処理を中止します。")
+    '            Environment.Exit(2)
+    '        End If
+
+    '        ' CSV を読み込む
+    '        Dim arrPixelValueText As List(Of Single()) = ReadCsv(SourceFilePath)
+
+    '        ' 行列のサイズ
+    '        Dim MatrixY As Integer = arrPixelValueText.Count - 1
+    '        Dim MatrixX As Integer = arrPixelValueText(0).Length - 1
+
+    '        ' バイナリ書き込み
+    '        Using stream As FileStream = New FileStream(DestFilePath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, FileOptions.SequentialScan)
+    '            Using writer As New BinaryWriter(stream)
+    '                For Each row In arrPixelValueText
+    '                    For Each value In row
+    '                        writer.Write(value)
+    '                    Next
+    '                Next
+    '            End Using
+    '        End Using
+
+    '        Console.WriteLine("Done!")
+    '    End Sub
+
+    '    ''' <summary>
+    '    ''' CSV ファイルの読み込み（高速化版）
+    '    ''' </summary>
+    '    ''' <param name="filePath">CSVファイルのパス</param>
+    '    ''' <returns>浮動小数点数の配列リスト</returns>
+    '    Private Function ReadCsv(filePath As String) As List(Of Single())
+    '        Dim result As New List(Of Single())()
+    '        Dim enc As Encoding = Encoding.UTF8
+
+    '        Using reader As New StreamReader(filePath, enc)
+    '            While Not reader.EndOfStream
+    '                Dim line As String = reader.ReadLine()
+    '                If String.IsNullOrWhiteSpace(line) Then Continue While
+
+    '                ' 文字列の分割
+    '                Dim strValues As String() = line.Split(","c)
+
+    '                ' 数値変換（エラーチェック付き）
+    '                Dim floatValues As Single() = Array.ConvertAll(strValues, Function(s)
+    '                                                                              Dim v As Single
+    '                                                                              If Single.TryParse(s, v) Then
+    '                                                                                  Return v
+    '                                                                              Else
+    '                                                                                  Return 0.0F ' エラー時は 0 とする
+    '                                                                              End If
+    '                                                                          End Function)
+
+    '                result.Add(floatValues)
+    '            End While
+    '        End Using
+
+    '        Return result
+    '    End Function
+
+End Module
+
+
 
 End Module
